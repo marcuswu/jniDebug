@@ -2,6 +2,7 @@ package adb
 
 import (
 	"fmt"
+	"strings"
 )
 
 func CopyLLDB(device string, pkg string, lldbPath string) error {
@@ -24,10 +25,21 @@ func StartApp(device string, pkg string, activity string) error {
 }
 
 func GetAppPid(device string, pkg string) (string, error) {
-	return ShellCommand(device, "", fmt.Sprintf("ps -A | grep %s | awk '{ print $2 }'", pkg))
+	pid, err := ShellCommand(device, "", fmt.Sprintf("ps -A | grep %s | awk '{ print $2 }'", pkg))
+	return strings.TrimSpace(pid), err
+}
+
+func StopLLDB(device string, pkg string) error {
+	// kill existing lldb prior to starting
+	pid, err := ShellCommand(device, "", "ps -A | grep lldb-server | head -1 | awk '{ print $2 }'")
+	pid = strings.TrimSpace(pid)
+	if err == nil && len(pid) >= 1 {
+		_, err = ShellCommand(device, pkg, fmt.Sprintf("kill -9 %s", pid))
+	}
+	return err
 }
 
 func StartLLDB(device string, pkg string, port string) error {
-	_, err := ShellCommand(device, pkg, fmt.Sprintf("/data/data/%s/lldb-server --server --listen \"*:%s\"", pkg, port))
+	_, err := ShellCommand(device, pkg, fmt.Sprintf("/data/data/%s/lldb-server platform --server --listen \"*:%s\"", pkg, port))
 	return err
 }

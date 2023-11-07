@@ -4,12 +4,19 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+
+	"github.com/rs/zerolog/log"
 )
 
 func adbCommand(command string) (string, error) {
 	args := strings.Split(command, " ")
 	cmd := exec.Command("adb", args...)
+	log.Debug().Strs("adb command", args).Msg("Running adb")
 	res, err := cmd.Output()
+	log.Debug().Str("result", string(res)).Msg("Adb completed")
+	if err != nil {
+		log.Error().Err(err).Msg("Adb error")
+	}
 	return string(res), err
 }
 
@@ -36,6 +43,6 @@ func ShellCommand(device string, runAs string, command string) (string, error) {
 	if len(runAs) > 0 {
 		assume = fmt.Sprintf("run-as %s ", runAs)
 	}
-	cmd := fmt.Sprintf("%s%s", assume, command)
+	cmd := fmt.Sprintf("shell %s%s", assume, command)
 	return adbCommand(commandWithDevice(device, cmd))
 }

@@ -2,18 +2,16 @@ package vscode
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
 )
 
 func GenerateVscodeConfig(configName string, device string, port string, pid string, debugFile string) []string {
-	debugPath := filepath.Dir(debugFile)
 	return []string{
 		`{`,
-		`    "name": ` + configName + ",",
+		`    "name": "` + configName + `",`,
 		`    "type": "lldb",`,
 		`    "request": "custom",`,
-		`    "initCommands": ["target create ` + debugFile + `", "target modules search-paths add / ` + debugPath + `"],`,
+		`    "initCommands": ["platform select remote-android", "file ` + debugFile + `"],`,
 		`    "processCreateCommands": ["platform connect connect://` + device + `:` + port + `", "attach ` + pid + `"]`,
 		`}`,
 	}
@@ -45,14 +43,14 @@ func AlterVscodeConfig(launchConfig string, newLines []string, startMarker strin
 				output = append(output, markerIndent+newLine)
 			}
 		}
+	}
 
-		if !foundBegin {
-			return launchConfig, fmt.Errorf("did not find begin marker line %s in the VSCode launch file", startMarker)
-		}
+	if !foundBegin {
+		return launchConfig, fmt.Errorf("did not find begin marker line %s in the VSCode launch file", startMarker)
+	}
 
-		if beginLine != -1 {
-			return launchConfig, fmt.Errorf("unterminated begin marker at line %d in the VSCode launch file. Add end marker line to file: '%s'", beginLine+1, endMarker)
-		}
+	if beginLine != -1 {
+		return launchConfig, fmt.Errorf("unterminated begin marker at line %d in the VSCode launch file. Add end marker line to file: '%s'", beginLine+1, endMarker)
 	}
 
 	return strings.Join(output, "\n"), nil

@@ -18,6 +18,25 @@ func GenerateVscodeConfig(configName string, device string, port string, pid str
 }
 
 // This code is a port of https://android.googlesource.com/platform/development/+/master/scripts/gdbclient.py#365
+/*
+AlterVscodeConfig is heavily based on insert_commands_into_vscode_config from
+https://android.googlesource.com/platform/development/+/master/scripts/gdbclient.py#365
+which is licensed under the Apache 2.0 license:
+
+Copyright (C) 2015 The Android Open Source Project
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 func AlterVscodeConfig(launchConfig string, newLines []string, startMarker string, endMarker string) (string, error) {
 	foundBegin := false
 	beginLine := -1

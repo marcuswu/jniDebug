@@ -6,6 +6,12 @@ A tool to make Android JNI Debugging in VSCode easier
 go install github.com/marcuswu/jnidebug@latest
 ```
 
+Add the following lines to your .vscode/launch.json as the last two lines inside the list of configurations:
+```
+// #lldbclient-generated-begin
+// #lldbclient-generated-end
+```
+
 ### Usage
 jniDebug -device emulator-0000 -lldb /path/to/lldb -package your.package -activity main.activity -debug /path/to/binary -vscode /path/to/launch.json [OPTIONS]
 
